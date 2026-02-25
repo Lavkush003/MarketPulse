@@ -1,0 +1,53 @@
+# ----------------------
+# Python
+# ----------------------
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# ----------------------
+# Flask
+# ----------------------
+instance/
+*.db
+*.sqlite3
+
+# Environment variables
+.env
+
+# ----------------------
+# Logs
+# ----------------------
+*.log
+error.log
+error_full.log
+
+# ----------------------
+# VS Code
+# ----------------------
+.vscode/
+
+# ----------------------
+# OS Files
+# ----------------------
+.DS_Store
+Thumbs.db
+
+# ----------------------
+# Testing / Cache
+# ----------------------
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ----------------------
+# Misc
+# ----------------------
+*.swp
+*.bak
