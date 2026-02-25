@@ -1,0 +1,364 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% set category = request.args.get('category') %}
+
+<!-- Dynamic Hero Section -->
+<section class="hero-v2 mb-0">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-7 stagger-in">
+                {% if not category %}
+                <span class="badge bg-primary px-3 py-2 rounded-2 text-uppercase fw-bold mb-4"
+                    style="letter-spacing: 2px; font-size: 0.7rem;">Mega Global Marketplace</span>
+                <h1 class="display-2 fw-800">Everything You Need,<br><span class="text-primary">In One Premium
+                        Place.</span></h1>
+                <p class="lead text-white-50 mb-5 pe-lg-5">Experience the future of global commerce. From cutting-edge
+                    tech to organic harvests, we deliver excellence right to your doorstep.</p>
+                {% elif category == 'Electronics' %}
+                <span class="badge bg-info px-3 py-2 rounded-2 text-uppercase fw-bold mb-4"
+                    style="letter-spacing: 2px; font-size: 0.7rem;">Innovating Your World</span>
+                <h1 class="display-2 fw-800">Future-Ready<br><span class="text-info">Tech & Gadgets.</span></h1>
+                <p class="lead text-white-50 mb-5 pe-lg-5">Explore our selection of flagship smartphones,
+                    high-performance laptops, and premium audio gear designed for the modern lifestyle.</p>
+                {% elif category == "Men's Fashion" %}
+                <span class="badge bg-primary px-3 py-2 rounded-2 text-uppercase fw-bold mb-4"
+                    style="letter-spacing: 2px; font-size: 0.7rem;">Suave & Sharp</span>
+                <h1 class="display-2 fw-800">Men's Premium<br><span class="text-primary">Style Hub.</span></h1>
+                <p class="lead text-white-50 mb-5 pe-lg-5">From sharp formal shirts to classic denim, find the
+                    essentials for a modern gentleman's wardrobe.</p>
+                {% elif category == "Women's Fashion" %}
+                <span class="badge bg-danger px-3 py-2 rounded-2 text-uppercase fw-bold mb-4"
+                    style="letter-spacing: 2px; font-size: 0.7rem;">Chic & Elegant</span>
+                <h1 class="display-2 fw-800">Women's Fashion<br><span class="text-danger">Collections.</span></h1>
+                <p class="lead text-white-50 mb-5 pe-lg-5">Explore our latest selection of tops, jeans, and formal wear
+                    designed for the contemporary woman.</p>
+                {% elif category == 'Groceries' %}
+                <span class="badge bg-success px-3 py-2 rounded-2 text-uppercase fw-bold mb-4"
+                    style="letter-spacing: 2px; font-size: 0.7rem;">From Farm to Table</span>
+                <h1 class="display-2 fw-800">Fresh & Organic<br><span class="text-success">Daily Essentials.</span></h1>
+                <p class="lead text-white-50 mb-5 pe-lg-5">Sustainably sourced, nutrient-rich, and delivered fresh.
+                    Explore our wide range of premium groceries and organic produce.</p>
+                {% elif category == 'Home & Kitchen' %}
+                <span class="badge bg-warning px-3 py-2 rounded-2 text-uppercase fw-bold mb-4 text-dark"
+                    style="letter-spacing: 2px; font-size: 0.7rem;">Elevate Your Space</span>
+                <h1 class="display-2 fw-800">Perfect Home,<br><span class="text-warning">Better Living.</span></h1>
+                <p class="lead text-white-50 mb-5 pe-lg-5">Find everything from designer furniture to professional
+                    kitchen gadgets. Make your home a masterpiece of comfort and style.</p>
+                {% elif category == 'Health & Fitness' %}
+                <span class="badge bg-info px-3 py-2 rounded-2 text-uppercase fw-bold mb-4"
+                    style="letter-spacing: 2px; font-size: 0.7rem;">Peak Performance</span>
+                <h1 class="display-2 fw-800">Your Ultimate<br><span class="text-info">Fitness Partner.</span></h1>
+                <p class="lead text-white-50 mb-5 pe-lg-5">Quality gym equipment, supplements, and accessories to help
+                    you achieve your wellness goals and push your limits.</p>
+                {% elif category == 'Kids' %}
+                <span class="badge bg-warning px-3 py-2 rounded-2 text-uppercase fw-bold mb-4 text-dark"
+                    style="letter-spacing: 2px; font-size: 0.7rem;">Imagination Station</span>
+                <h1 class="display-2 fw-800">Joyful Toys &<br><span class="text-warning">Kids Essentials.</span></h1>
+                <p class="lead text-white-50 mb-5 pe-lg-5">Explore a world of wonder with educational toys, baby care,
+                    and fun gains designed to inspire and delight your little ones.</p>
+                {% else %}
+                <span class="badge bg-secondary px-3 py-2 rounded-2 text-uppercase fw-bold mb-4"
+                    style="letter-spacing: 2px; font-size: 0.7rem;">{{ category }} Collection</span>
+                <h1 class="display-2 fw-800">Explore Best in<br><span class="text-white">{{ category }}.</span></h1>
+                <p class="lead text-white-50 mb-5 pe-lg-5">Explore our handpicked selection of top-quality products in
+                    the {{ category }} department.</p>
+                {% endif %}
+
+                <div class="d-flex gap-3">
+                    <a href="#shop-section"
+                        class="btn btn-primary btn-lg rounded-pill px-5 py-3 fw-bold shadow-lg">Browse Products</a>
+                    {% if not category %}
+                    <a href="{{ url_for('home', category='Electronics') }}" class="btn btn-glass btn-lg px-4 py-3">View
+                        Electronics</a>
+                    {% else %}
+                    <a href="{{ url_for('home') }}" class="btn btn-glass btn-lg px-4 py-3">Back to All</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block stagger-in" style="animation-delay: 0.2s;">
+                <div class="position-relative">
+                    {% if category == 'Electronics' %}
+                    <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80"
+                        class="img-fluid rounded-4 shadow-lg border border-white border-2" alt="Electronics">
+                    {% elif category == "Men's Fashion" %}
+                    <img src="https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?auto=format&fit=crop&w=800&q=80"
+                        class="img-fluid rounded-4 shadow-lg border border-white border-2" alt="Men's Fashion">
+                    {% elif category == "Women's Fashion" %}
+                    <img src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=800&q=80"
+                        class="img-fluid rounded-4 shadow-lg border border-white border-2" alt="Women's Fashion">
+                    {% elif category == 'Groceries' %}
+                    <img src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?auto=format&fit=crop&w=800&q=80"
+                        class="img-fluid rounded-4 shadow-lg border border-white border-2" alt="Groceries">
+                    {% elif category == 'Home & Kitchen' %}
+                    <img src="https://images.unsplash.com/photo-1556911223-e2f0397ff460?auto=format&fit=crop&w=800&q=80"
+                        class="img-fluid rounded-4 shadow-lg border border-white border-2" alt="Home & Kitchen">
+                    {% elif category == 'Health & Fitness' %}
+                    <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=800&q=80"
+                        class="img-fluid rounded-4 shadow-lg border border-white border-2" alt="Fitness">
+                    {% elif category == 'Kids' %}
+                    <img src="https://images.unsplash.com/photo-1545558014-8692077e9b5c?auto=format&fit=crop&w=800&q=80"
+                        class="img-fluid rounded-4 shadow-lg border border-white border-2" alt="Kids">
+                    {% else %}
+                    <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=800&q=80"
+                        class="img-fluid rounded-4 shadow-lg border border-white border-2" alt="Hero">
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container py-5" id="shop-section">
+    <div class="row g-4">
+        <!-- Sidebar Filters (Modern Sticky) -->
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="filter-sidebar stagger-in" style="position: sticky; top: 120px;">
+                <span class="filter-group-title">Browse Departments</span>
+
+                <a href="{{ url_for('home') }}" class="filter-item {% if not category %}active{% endif %}">
+                    <span><i class="fas fa-th-large me-2"></i> All Collections</span>
+                    <i class="fas fa-chevron-right small opacity-50"></i>
+                </a>
+                <a href="{{ url_for('home', category='Electronics') }}"
+                    class="filter-item {% if category == 'Electronics' %}active{% endif %}">
+                    <span><i class="fas fa-mobile-alt me-2"></i> Electronics</span>
+                    <i
+                        class="fas fa-chevron-{% if category == 'Electronics' %}down{% else %}right{% endif %} small opacity-50"></i>
+                </a>
+
+                {% if category == 'Electronics' %}
+                <div class="ms-4 my-2 d-flex flex-column gap-1 sub-filter-box">
+                    <a href="{{ url_for('home', category='Electronics', subcategory='Mobiles') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Mobiles' %}active{% endif %}">
+                        <i class="fas fa-mobile me-2 small"></i> Mobiles
+                    </a>
+                    <a href="{{ url_for('home', category='Electronics', subcategory='Laptops') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Laptops' %}active{% endif %}">
+                        <i class="fas fa-laptop me-2 small"></i> Laptops
+                    </a>
+                    <a href="{{ url_for('home', category='Electronics', subcategory='Tablets') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Tablets' %}active{% endif %}">
+                        <i class="fas fa-tablet me-2 small"></i> Tablets
+                    </a>
+                    <a href="{{ url_for('home', category='Electronics', subcategory='Other') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Other' %}active{% endif %}">
+                        <i class="fas fa-headphones me-2 small"></i> Other
+                    </a>
+                </div>
+                {% endif %}
+                <a href="{{ url_for('home', category='Men\'s Fashion') }}"
+                    class="filter-item {% if category == 'Men\'s Fashion' %}active{% endif %}">
+                    <span><i class="fas fa-male me-2"></i> Men's Fashion</span>
+                    <i class="fas fa-chevron-right small opacity-50"></i>
+                </a>
+                <a href="{{ url_for('home', category='Women\'s Fashion') }}"
+                    class="filter-item {% if category == 'Women\'s Fashion' %}active{% endif %}">
+                    <span><i class="fas fa-female me-2"></i> Women's Fashion</span>
+                    <i class="fas fa-chevron-right small opacity-50"></i>
+                </a>
+                <a href="{{ url_for('home', category='Groceries') }}"
+                    class="filter-item {% if category == 'Groceries' %}active{% endif %}">
+                    <span><i class="fas fa-apple-alt me-2"></i> Groceries</span>
+                    <i
+                        class="fas fa-chevron-{% if category == 'Groceries' %}down{% else %}right{% endif %} small opacity-50"></i>
+                </a>
+
+                {% if category == 'Groceries' %}
+                <div class="ms-4 my-2 d-flex flex-column gap-1 sub-filter-box">
+                    <a href="{{ url_for('home', category='Groceries', subcategory='Fruits & Vegetables') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Fruits & Vegetables' %}active{% endif %}">
+                        <i class="fas fa-carrot me-2 small"></i> Fruits & Vegetables
+                    </a>
+                    <a href="{{ url_for('home', category='Groceries', subcategory='Dairy & Bakery') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Dairy & Bakery' %}active{% endif %}">
+                        <i class="fas fa-cheese me-2 small"></i> Dairy & Bakery
+                    </a>
+                    <a href="{{ url_for('home', category='Groceries', subcategory='Staples & Grains') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Staples & Grains' %}active{% endif %}">
+                        <i class="fas fa-wheat-awn me-2 small"></i> Staples & Grains
+                    </a>
+                    <a href="{{ url_for('home', category='Groceries', subcategory='Snacks & Packaged Foods') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Snacks & Packaged Foods' %}active{% endif %}">
+                        <i class="fas fa-cookie me-2 small"></i> Snacks & Packaged Foods
+                    </a>
+                    <a href="{{ url_for('home', category='Groceries', subcategory='Beverages') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Beverages' %}active{% endif %}">
+                        <i class="fas fa-coffee me-2 small"></i> Beverages
+                    </a>
+                    <a href="{{ url_for('home', category='Groceries', subcategory='Spices & Condiments') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Spices & Condiments' %}active{% endif %}">
+                        <i class="fas fa-pepper-hot me-2 small"></i> Spices & Condiments
+                    </a>
+                    <a href="{{ url_for('home', category='Groceries', subcategory='Personal Care') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Personal Care' %}active{% endif %}">
+                        <i class="fas fa-soap me-2 small"></i> Personal Care
+                    </a>
+                </div>
+                {% endif %}
+                <a href="{{ url_for('home', category='Home & Kitchen') }}"
+                    class="filter-item {% if category == 'Home & Kitchen' %}active{% endif %}">
+                    <span><i class="fas fa-utensils me-2"></i> Home & Kitchen</span>
+                    <i
+                        class="fas fa-chevron-{% if category == 'Home & Kitchen' %}down{% else %}right{% endif %} small opacity-50"></i>
+                </a>
+
+                {% if category == 'Home & Kitchen' %}
+                <div class="ms-4 my-2 d-flex flex-column gap-1 sub-filter-box">
+                    <a href="{{ url_for('home', category='Home & Kitchen', subcategory='Kitchen & Dining') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Kitchen & Dining' %}active{% endif %}">
+                        <i class="fas fa-blender me-2 small"></i> Kitchen & Dining
+                    </a>
+                    <a href="{{ url_for('home', category='Home & Kitchen', subcategory='Kitchen Storage') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Kitchen Storage' %}active{% endif %}">
+                        <i class="fas fa-box me-2 small"></i> Kitchen Storage
+                    </a>
+                    <a href="{{ url_for('home', category='Home & Kitchen', subcategory='Home Décor') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Home Décor' %}active{% endif %}">
+                        <i class="fas fa-paint-roller me-2 small"></i> Home Décor
+                    </a>
+                    <a href="{{ url_for('home', category='Home & Kitchen', subcategory='Furniture') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Furniture' %}active{% endif %}">
+                        <i class="fas fa-couch me-2 small"></i> Furniture
+                    </a>
+                    <a href="{{ url_for('home', category='Home & Kitchen', subcategory='Home Cleaning') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Home Cleaning' %}active{% endif %}">
+                        <i class="fas fa-broom me-2 small"></i> Home Cleaning
+                    </a>
+                    <a href="{{ url_for('home', category='Home & Kitchen', subcategory='Small Appliances') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Small Appliances' %}active{% endif %}">
+                        <i class="fas fa-plug me-2 small"></i> Small Appliances
+                    </a>
+                </div>
+                {% endif %}
+
+                <a href="{{ url_for('home', category='Health & Fitness') }}"
+                    class="filter-item {% if category == 'Health & Fitness' %}active{% endif %}">
+                    <span><i class="fas fa-dumbbell me-2"></i> Fitness</span>
+                    <i
+                        class="fas fa-chevron-{% if category == 'Health & Fitness' %}down{% else %}right{% endif %} small opacity-50"></i>
+                </a>
+
+                {% if category == 'Health & Fitness' %}
+                <div class="ms-4 my-2 d-flex flex-column gap-1 sub-filter-box">
+                    <a href="{{ url_for('home', category='Health & Fitness', subcategory='Gym Equipment') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Gym Equipment' %}active{% endif %}">
+                        <i class="fas fa-weight-hanging me-2 small"></i> Gym Equipment
+                    </a>
+                    <a href="{{ url_for('home', category='Health & Fitness', subcategory='Cardio Equipment') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Cardio Equipment' %}active{% endif %}">
+                        <i class="fas fa-running me-2 small"></i> Cardio Equipment
+                    </a>
+                    <a href="{{ url_for('home', category='Health & Fitness', subcategory='Yoga & Meditation') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Yoga & Meditation' %}active{% endif %}">
+                        <i class="fas fa-spa me-2 small"></i> Yoga & Meditation
+                    </a>
+                    <a href="{{ url_for('home', category='Health & Fitness', subcategory='Supplements') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Supplements' %}active{% endif %}">
+                        <i class="fas fa-capsules me-2 small"></i> Supplements
+                    </a>
+                    <a href="{{ url_for('home', category='Health & Fitness', subcategory='Fitness Accessories') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Fitness Accessories' %}active{% endif %}">
+                        <i class="fas fa-watch me-2 small"></i> Fitness Accessories
+                    </a>
+                </div>
+                {% endif %}
+
+                <a href="{{ url_for('home', category='Kids') }}"
+                    class="filter-item {% if category == 'Kids' %}active{% endif %}">
+                    <span><i class="fas fa-gamepad me-2"></i> Kids & Toys</span>
+                    <i
+                        class="fas fa-chevron-{% if category == 'Kids' %}down{% else %}right{% endif %} small opacity-50"></i>
+                </a>
+
+                {% if category == 'Kids' %}
+                <div class="ms-4 my-2 d-flex flex-column gap-1 sub-filter-box">
+                    <a href="{{ url_for('home', category='Kids', subcategory='Baby Care') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Baby Care' %}active{% endif %}">
+                        <i class="fas fa-baby me-2 small"></i> Baby Care
+                    </a>
+                    <a href="{{ url_for('home', category='Kids', subcategory='Educational Toys') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Educational Toys' %}active{% endif %}">
+                        <i class="fas fa-lightbulb me-2 small"></i> Educational Toys
+                    </a>
+                    <a href="{{ url_for('home', category='Kids', subcategory='Action & Remote Toys') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Action & Remote Toys' %}active{% endif %}">
+                        <i class="fas fa-car me-2 small"></i> Action & Remote Toys
+                    </a>
+                    <a href="{{ url_for('home', category='Kids', subcategory='Board Games') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'Board Games' %}active{% endif %}">
+                        <i class="fas fa-chess-board me-2 small"></i> Board Games
+                    </a>
+                    <a href="{{ url_for('home', category='Kids', subcategory='School Supplies') }}"
+                        class="sub-filter-item {% if request.args.get('subcategory') == 'School Supplies' %}active{% endif %}">
+                        <i class="fas fa-pencil-alt me-2 small"></i> School Supplies
+                    </a>
+                </div>
+                {% endif %}
+
+                <div class="mt-5 p-4 bg-light rounded-4 border border-light shadow-sm">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-shield-alt me-2 text-primary"></i> Buyer Protection</h6>
+                    <p class="small text-muted mb-0">Shop with confidence. 100% money back guarantee.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-end mb-5 stagger-in">
+                <div>
+                    <h2 class="fw-800 mb-1">{% if category %}{{ category }}{% else %}Featured Selection{% endif %}</h2>
+                    <p class="text-muted mb-0">Viewing our handpicked premium inventory.</p>
+                </div>
+                <div
+                    class="small fw-bold text-primary bg-primary bg-opacity-10 px-3 py-2 rounded-3 border border-primary border-opacity-25">
+                    {{ products|length }} Products Found
+                </div>
+            </div>
+
+            <div class="row g-4">
+                {% if products %}
+                {% for product in products %}
+                <div class="col-md-6 col-xl-4 stagger-in" style="animation-delay: {{ loop.index0 * 0.05 }}s">
+                    <div class="pro-card">
+                        <div class="img-wrapper">
+                            <span class="pro-badge">{{ product.category }}</span>
+                            {% if product.image_file.startswith('http') %}
+                            <img src="{{ product.image_file }}" alt="{{ product.name }}"
+                                onerror="this.src='https://images.unsplash.com/photo-1560393464-5c69a73c5770?auto=format&fit=crop&w=500&q=80'">
+                            {% else %}
+                            <img src="{{ url_for('static', filename='uploads/' + product.image_file) }}"
+                                alt="{{ product.name }}"
+                                onerror="this.src='https://images.unsplash.com/photo-1560393464-5c69a73c5770?auto=format&fit=crop&w=500&q=80'">
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <a href="{{ url_for('product_detail', product_id=product.id) }}" class="pro-title">{{
+                                product.name }}</a>
+                            <div class="mt-auto">
+                                <span class="pro-price">${{ "%.2f"|format(product.price) }}</span>
+                                <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="add-btn">
+                                    <i class="fas fa-cart-plus me-2"></i> Add to Cart
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="col-12 text-center py-5 stagger-in">
+                    <div class="bg-white p-5 rounded-4 shadow-sm border border-light">
+                        <i class="fas fa-shopping-bag fa-4x text-muted mb-4 opacity-25"></i>
+                        <h3 class="fw-bold">Department is Empty</h3>
+                        <p class="text-muted mb-4">We are currently restocking this section. Check back soon!</p>
+                        <a href="{{ url_for('home') }}" class="btn btn-primary rounded-pill px-5 py-2">Back to
+                            Collections</a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

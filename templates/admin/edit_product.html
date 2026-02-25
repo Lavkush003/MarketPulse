@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-md-8">
+        <div class="form-container fade-in">
+            <div class="d-flex align-items-center mb-4">
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-light rounded-circle me-3">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <h2 class="fw-bold m-0 text-success">Edit Product: {{ product.name }}</h2>
+            </div>
+
+            <form method="POST" action="" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <img src="{{ url_for('static', filename='uploads/' + product.image_file) }}" alt=""
+                            class="img-fluid rounded-3 border"
+                            onerror="this.src='https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80'">
+                        <p class="text-center small text-muted mt-2">Current Image</p>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    {{ form.name.label(class="form-label fw-bold") }}
+                                    {{ form.name(class="form-control") }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.category.label(class="form-label fw-bold") }}
+                                    {{ form.category(class="form-select") }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.subcategory.label(class="form-label fw-bold") }}
+                                    {{ form.subcategory(class="form-control", placeholder="e.g. Mobiles, Laptops") }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form.description.label(class="form-label fw-bold") }}
+                    {{ form.description(class="form-control", rows="4") }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            {{ form.price.label(class="form-label fw-bold") }}
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                {{ form.price(class="form-control") }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            {{ form.stock.label(class="form-label fw-bold") }}
+                            {{ form.stock(class="form-control") }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            {{ form.image.label(class="form-label fw-bold") }}
+                            {{ form.image(class="form-control") }}
+                            <small class="text-muted">Leave empty to keep current image</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    {{ form.submit(class="btn btn-success btn-lg rounded-pill py-3", value="Update Product") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

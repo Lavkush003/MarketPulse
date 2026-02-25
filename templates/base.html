@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organic Marketplace - {{ title if title else 'Professional E-Commerce' }}</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('home') }}">
+                <div class="bg-primary text-white rounded-3 p-2 d-flex align-items-center justify-content-center"
+                    style="width: 40px; height: 40px;">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <span>MEGA MARKET</span>
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">Explore</a></li>
+                    <li class="nav-item"><a class="nav-link"
+                            href="{{ url_for('home', category='Electronics') }}">Tech</a></li>
+                    <li class="nav-item"><a class="nav-link"
+                            href="{{ url_for('home', category='Groceries') }}">Grocery</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}">Help</a></li>
+                </ul>
+
+                <form class="d-flex mx-auto col-lg-4 d-none d-lg-flex position-relative"
+                    action="{{ url_for('search') }}" method="GET">
+                    <input class="form-control rounded-pill border-0 bg-light px-4 py-2" type="search" name="q"
+                        placeholder="What are you looking for?" aria-label="Search">
+                    <button class="btn position-absolute end-0 top-50 translate-middle-y me-2 text-muted" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+
+                <ul class="navbar-nav ms-auto align-items-center">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#"
+                            id="profileDropdown" role="button" data-bs-toggle="dropdown">
+                            <div class="avatar-sm bg-light rounded-circle p-1">
+                                <i class="fas fa-user-alt text-primary"></i>
+                            </div>
+                            <span>{{ current_user.username }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-3">
+                            <li class="px-3 py-2 mb-2"><span class="small text-muted d-block">Signed in
+                                    as</span><strong>{{ current_user.email }}</strong></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item py-2 rounded-2" href="{{ url_for('profile') }}"><i
+                                        class="fas fa-user-circle me-3"></i>Profile</a></li>
+                            <li><a class="dropdown-item py-2 rounded-2" href="{{ url_for('orders') }}"><i
+                                        class="fas fa-box-open me-3"></i>My Orders</a></li>
+                            {% if current_user.is_admin %}
+                            <li><a class="dropdown-item py-2 rounded-2 text-indigo fw-bold"
+                                    href="{{ url_for('admin_dashboard') }}"><i class="fas fa-tools me-3"></i>Admin
+                                    Dashboard</a></li>
+                            {% endif %}
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item py-2 rounded-2 text-danger" href="{{ url_for('logout') }}"><i
+                                        class="fas fa-sign-out-alt me-3"></i>Sign Out</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
+                    <li class="nav-item ms-lg-2"><a class="btn btn-primary rounded-pill px-4"
+                            href="{{ url_for('register') }}">Join Now</a></li>
+                    {% endif %}
+
+                    <li class="nav-item ms-3">
+                        <a class="nav-link position-relative px-2" href="{{ url_for('cart') }}">
+                            <i class="fas fa-shopping-cart fs-5"></i>
+                            {% if current_user.is_authenticated and current_user.cart_items|length > 0 %}
+                            <span
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light"
+                                style="font-size: 0.6rem;">
+                                {{ current_user.cart_items|length }}
+                            </span>
+                            {% endif %}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Quick Category Bar -->
+    <div class="category-bar">
+        <div class="container d-flex gap-3 align-items-center">
+            <a href="{{ url_for('home') }}#shop-section"
+                class="category-tag {% if not request.args.get('category') %}active{% endif %}">
+                <i class="fas fa-box-open"></i> All
+            </a>
+            <a href="{{ url_for('home', category='Electronics') }}#shop-section"
+                class="category-tag {% if request.args.get('category') == 'Electronics' %}active{% endif %}">
+                <i class="fas fa-mobile-alt"></i> Tech
+            </a>
+            <a href="{{ url_for('home', category='Men\'s Fashion') }}#shop-section"
+                class="category-tag {% if request.args.get('category') == 'Men\'s Fashion' %}active{% endif %}">
+                <i class="fas fa-male"></i> Men's Fashion
+            </a>
+            <a href="{{ url_for('home', category='Women\'s Fashion') }}#shop-section"
+                class="category-tag {% if request.args.get('category') == 'Women\'s Fashion' %}active{% endif %}">
+                <i class="fas fa-female"></i> Women's Fashion
+            </a>
+            <a href="{{ url_for('home', category='Groceries') }}#shop-section"
+                class="category-tag {% if request.args.get('category') == 'Groceries' %}active{% endif %}">
+                <i class="fas fa-apple-alt"></i> Grocery
+            </a>
+            <a href="{{ url_for('home', category='Home & Kitchen') }}#shop-section"
+                class="category-tag {% if request.args.get('category') == 'Home & Kitchen' %}active{% endif %}">
+                <i class="fas fa-utensils"></i> Home
+            </a>
+            <a href="{{ url_for('home', category='Health & Fitness') }}#shop-section"
+                class="category-tag {% if request.args.get('category') == 'Health & Fitness' %}active{% endif %}">
+                <i class="fas fa-dumbbell"></i> Fitness
+            </a>
+            <a href="{{ url_for('home', category='Kids') }}#shop-section"
+                class="category-tag {% if request.args.get('category') == 'Kids' %}active{% endif %}">
+                <i class="fas fa-gamepad"></i> Kids
+            </a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="container mt-3">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} border-0 shadow-sm alert-dismissible fade show animate" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+    <footer class="bg-white py-5 mt-5 border-top">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h4 class="fw-bold mb-4 text-primary">ORGANIC MARKETPLACE</h4>
+                    <p class="text-muted mb-4">The global standard for professional organic farming excellence. We
+                        bridge the gap between high-end agricultural tech and nature's freshest harvests.</p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-muted fs-5"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-muted fs-5"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-muted fs-5"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-muted fs-5"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 ms-auto">
+                    <h6 class="fw-bold mb-4">Shop</h6>
+                    <ul class="list-unstyled text-muted">
+                        <li><a href="{{ url_for('home', category='Electronics') }}"
+                                class="text-decoration-none text-muted mb-2 d-inline-block">Electronics</a></li>
+                        <li><a href="{{ url_for('home', category='Fashion') }}"
+                                class="text-decoration-none text-muted mb-2 d-inline-block">Fashion</a></li>
+                        <li><a href="{{ url_for('home', category='Home & Kitchen') }}"
+                                class="text-decoration-none text-muted mb-2 d-inline-block">Home & Kitchen</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6 class="fw-bold mb-4">Company</h6>
+                    <ul class="list-unstyled text-muted">
+                        <li><a href="{{ url_for('contact') }}"
+                                class="text-decoration-none text-muted mb-2 d-inline-block">Contact Us</a></li>
+                        <li><a href="#" class="text-decoration-none text-muted mb-2 d-inline-block">About Our
+                                Mission</a></li>
+                        <li><a href="#" class="text-decoration-none text-muted mb-2 d-inline-block">Partner Farms</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h6 class="fw-bold mb-4">Newsletter</h6>
+                    <p class="text-muted small">Get harvest updates and exclusive farming tech discounts.</p>
+                    <div class="input-group mb-3 custom-input-group">
+                        <input type="text" class="form-control border-0 bg-light" placeholder="Email address">
+                        <button class="btn btn-primary" type="button">Join</button>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-5 opacity-10">
+            <div class="text-center text-muted small">
+                © 2026 Professional Organic E-Commerce. Built with Python & Flask.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
