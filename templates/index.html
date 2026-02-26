@@ -5,7 +5,7 @@
 
 <!-- Dynamic Hero Section -->
 <section class="hero-v2 mb-0">
-    <div class="container">
+    <div class="container-fluid px-lg-5">
         <div class="row align-items-center g-5">
             <div class="col-lg-7 stagger-in">
                 {% if not category %}
@@ -91,7 +91,7 @@
                     <img src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?auto=format&fit=crop&w=800&q=80"
                         class="img-fluid rounded-4 shadow-lg border border-white border-2" alt="Groceries">
                     {% elif category == 'Home & Kitchen' %}
-                    <img src="https://images.unsplash.com/photo-1556911223-e2f0397ff460?auto=format&fit=crop&w=800&q=80"
+                    <img src="{{ url_for('static', filename='uploads/Home&Kitchen/Kitchen&Dining/kitchenset.jpg') }}"
                         class="img-fluid rounded-4 shadow-lg border border-white border-2" alt="Home & Kitchen">
                     {% elif category == 'Health & Fitness' %}
                     <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=800&q=80"
@@ -109,11 +109,24 @@
     </div>
 </section>
 
-<div class="container py-5" id="shop-section">
+<div class="container-fluid py-5 px-lg-5" id="shop-section">
     <div class="row g-4">
         <!-- Sidebar Filters (Modern Sticky) -->
         <div class="col-lg-3 d-none d-lg-block">
             <div class="filter-sidebar stagger-in" style="position: sticky; top: 120px;">
+                {% if current_user.is_authenticated and current_user.is_admin %}
+                <div class="mb-4 bg-primary text-white p-3 rounded-4 shadow-sm">
+                    <span class="filter-group-title text-white opacity-75 small">Admin Control Panel</span>
+                    <a href="{{ url_for('add_product') }}"
+                        class="btn btn-light w-100 rounded-3 mt-2 fw-bold text-primary">
+                        <i class="fas fa-plus-circle me-2"></i>Add New Item
+                    </a>
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-light w-100 rounded-3 mt-2 small">
+                        <i class="fas fa-tasks me-2"></i>Manage Dashboard
+                    </a>
+                </div>
+                <hr class="opacity-10 my-4">
+                {% endif %}
                 <span class="filter-group-title">Browse Departments</span>
 
                 <a href="{{ url_for('home') }}" class="filter-item {% if not category %}active{% endif %}">
@@ -336,7 +349,7 @@
                             <a href="{{ url_for('product_detail', product_id=product.id) }}" class="pro-title">{{
                                 product.name }}</a>
                             <div class="mt-auto">
-                                <span class="pro-price">${{ "%.2f"|format(product.price) }}</span>
+                                <span class="pro-price">₹{{ "%.2f"|format(product.price) }}</span>
                                 <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="add-btn">
                                     <i class="fas fa-cart-plus me-2"></i> Add to Cart
                                 </a>

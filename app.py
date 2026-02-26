@@ -1,14 +1,23 @@
 import os
+from dotenv import load_dotenv
+load_dotenv()
 from flask import Flask, render_template, url_for, flash, redirect, request, abort
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from extensions import db
+from flask_migrate import Migrate
 from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+# Ensure upload directory exists
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
 db.init_app(app)
+# Initialize Flask-Migrate for handling migrations
+migrate = Migrate(app, db)
 
 # Import models and forms AFTER db.init_app to avoid registry issues
 from models import User, Product, Cart, Order, OrderItem
@@ -54,7 +63,7 @@ def register():
         user = User(username=form.username.data, email=form.email.data, password=hashed_password)
         db.session.add(user)
         db.session.commit()
-        flash('Your account has been created! You are now able to log in', 'success')
+        flash('Account created! Please log in to continue.', 'success')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
@@ -110,6 +119,30 @@ def remove_from_cart(cart_id):
     db.session.delete(item)
     db.session.commit()
     flash('Item removed from cart.', 'info')
+    return redirect(url_for('cart'))
+
+@app.route('/update_cart/<int:cart_id>/<action>')
+@login_required
+def update_cart(cart_id, action):
+    cart_item = Cart.query.get_or_404(cart_id)
+    if cart_item.user_id != current_user.id:
+        abort(403)
+    
+    if action == 'increase':
+        if cart_item.product.stock > cart_item.quantity:
+            cart_item.quantity += 1
+            db.session.commit()
+        else:
+            flash(f'Sorry, only {cart_item.product.stock} items in stock.', 'warning')
+    elif action == 'decrease':
+        if cart_item.quantity > 1:
+            cart_item.quantity -= 1
+            db.session.commit()
+        else:
+            db.session.delete(cart_item)
+            db.session.commit()
+            flash('Item removed from cart.', 'info')
+    
     return redirect(url_for('cart'))
 
 # --- Checkout & Orders ---

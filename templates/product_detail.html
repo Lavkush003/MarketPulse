@@ -22,7 +22,7 @@
             <div class="ps-md-4">
                 <span class="badge-category mb-2 d-inline-block">{{ product.category }}</span>
                 <h1 class="display-5 fw-bold mb-3">{{ product.name }}</h1>
-                <h2 class="text-success fw-bold mb-4">${{ "%.2f"|format(product.price) }}</h2>
+                <h2 class="text-success fw-bold mb-4">₹{{ "%.2f"|format(product.price) }}</h2>
 
                 <div class="mb-4">
                     <h5 class="fw-bold">Description</h5>

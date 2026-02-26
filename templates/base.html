@@ -21,7 +21,7 @@
 
 <body>
     <nav class="navbar navbar-expand-lg sticky-top">
-        <div class="container">
+        <div class="container-fluid px-lg-5">
             <a class="navbar-brand" href="{{ url_for('home') }}">
                 <div class="bg-primary text-white rounded-3 p-2 d-flex align-items-center justify-content-center"
                     style="width: 40px; height: 40px;">
@@ -55,6 +55,15 @@
 
                 <ul class="navbar-nav ms-auto align-items-center">
                     {% if current_user.is_authenticated %}
+                    {% if current_user.is_admin %}
+                    <li class="nav-item me-3">
+                        <a class="btn btn-success btn-sm rounded-pill px-3 shadow-sm d-flex align-items-center gap-2"
+                            href="{{ url_for('add_product') }}">
+                            <i class="fas fa-plus-circle"></i>
+                            <span class="d-none d-xl-inline">Add New Item</span>
+                        </a>
+                    </li>
+                    {% endif %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#"
                             id="profileDropdown" role="button" data-bs-toggle="dropdown">
@@ -98,7 +107,7 @@
                             <span
                                 class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light"
                                 style="font-size: 0.6rem;">
-                                {{ current_user.cart_items|length }}
+                                {{ current_user.cart_items|sum(attribute='quantity') }}
                             </span>
                             {% endif %}
                         </a>
@@ -110,7 +119,7 @@
 
     <!-- Quick Category Bar -->
     <div class="category-bar">
-        <div class="container d-flex gap-3 align-items-center">
+        <div class="container-fluid px-lg-5 d-flex gap-3 align-items-center">
             <a href="{{ url_for('home') }}#shop-section"
                 class="category-tag {% if not request.args.get('category') %}active{% endif %}">
                 <i class="fas fa-box-open"></i> All
