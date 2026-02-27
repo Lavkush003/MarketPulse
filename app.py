@@ -218,6 +218,63 @@ def admin_dashboard():
     products = Product.query.all()
     return render_template('admin/dashboard.html', products=products)
 
+# --- Admin Database Viewer ---
+
+@app.route('/admin/database')
+@login_required
+def admin_database():
+    if not current_user.is_admin:
+        abort(403)
+    stats = {
+        'users':     User.query.count(),
+        'products':  Product.query.count(),
+        'orders':    Order.query.count(),
+        'cart':      Cart.query.count(),
+        'order_items': OrderItem.query.count(),
+    }
+    return render_template('admin/database.html', stats=stats, active_table=None)
+
+@app.route('/admin/database/<table_name>')
+@login_required
+def admin_database_table(table_name):
+    if not current_user.is_admin:
+        abort(403)
+    stats = {
+        'users':     User.query.count(),
+        'products':  Product.query.count(),
+        'orders':    Order.query.count(),
+        'cart':      Cart.query.count(),
+        'order_items': OrderItem.query.count(),
+    }
+    allowed = ['users', 'products', 'orders', 'cart', 'order_items']
+    if table_name not in allowed:
+        abort(404)
+
+    data = []
+    columns = []
+    if table_name == 'users':
+        columns = ['ID', 'Username', 'Email', 'Is Admin']
+        rows = User.query.all()
+        data = [[u.id, u.username, u.email, '✅ Admin' if u.is_admin else '👤 User'] for u in rows]
+    elif table_name == 'products':
+        columns = ['ID', 'Name', 'Category', 'Subcategory', 'Price (₹)', 'Stock', 'Image', 'Created At']
+        rows = Product.query.all()
+        data = [[p.id, p.name, p.category, p.subcategory or '-', f'₹{p.price:.2f}', p.stock, p.image_file, p.created_at.strftime('%Y-%m-%d %H:%M')] for p in rows]
+    elif table_name == 'orders':
+        columns = ['Order ID', 'User ID', 'Username', 'Total Price (₹)', 'Status', 'Created At']
+        rows = Order.query.order_by(Order.created_at.desc()).all()
+        data = [[o.id, o.user_id, o.owner.username, f'₹{o.total_price:.2f}', o.status, o.created_at.strftime('%Y-%m-%d %H:%M')] for o in rows]
+    elif table_name == 'cart':
+        columns = ['Cart ID', 'User ID', 'Username', 'Product ID', 'Product Name', 'Quantity']
+        rows = Cart.query.all()
+        data = [[c.id, c.user_id, c.owner.username, c.product_id, c.product.name, c.quantity] for c in rows]
+    elif table_name == 'order_items':
+        columns = ['ID', 'Order ID', 'Product ID', 'Product Name', 'Quantity', 'Unit Price (₹)']
+        rows = OrderItem.query.all()
+        data = [[oi.id, oi.order_id, oi.product_id, oi.product.name, oi.quantity, f'₹{oi.price:.2f}'] for oi in rows]
+
+    return render_template('admin/database.html', stats=stats, active_table=table_name, columns=columns, data=data)
+
 @app.route('/admin/product/new', methods=['GET', 'POST'])
 @login_required
 def add_product():
@@ -290,7 +347,7 @@ def delete_product(product_id):
 
 if __name__ == '__main__':
     with app.app_context():
-        # db.create_all()
+        db.create_all()
         admin = User.query.filter_by(email='admin@market.com').first()
         if not admin:
             hashed_pw = generate_password_hash('admin123')

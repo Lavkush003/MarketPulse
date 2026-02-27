@@ -1,0 +1,790 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  /* ── Database Viewer Styles ────────────────────────── */
+  .db-wrapper {
+    display: flex;
+    min-height: calc(100vh - 140px);
+    background: #f0f4ff;
+  }
+
+  /* Sidebar */
+  .db-sidebar {
+    width: 260px;
+    min-width: 260px;
+    background: linear-gradient(160deg, #0f172a 0%, #1e293b 100%);
+    padding: 28px 16px;
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .db-sidebar-title {
+    color: #94a3b8;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0 10px;
+    margin-bottom: 10px;
+  }
+
+  .db-table-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+  }
+
+  .db-table-btn:hover {
+    background: rgba(99, 102, 241, 0.15);
+    color: #c7d2fe;
+    border-color: rgba(99, 102, 241, 0.2);
+  }
+
+  .db-table-btn.active {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+  }
+
+  .db-table-btn .badge-count {
+    margin-left: auto;
+    background: rgba(255, 255, 255, 0.15);
+    color: inherit;
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+
+  .db-table-btn.active .badge-count {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  /* Main content */
+  .db-main {
+    flex: 1;
+    padding: 32px 36px;
+    overflow-x: auto;
+  }
+
+  .db-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .db-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .db-title .title-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+  }
+
+  /* Stat cards */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px 18px;
+    text-decoration: none;
+    color: inherit;
+    border: 2px solid transparent;
+    transition: all 0.25s;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+    border-color: #6366f1;
+    color: inherit;
+  }
+
+  .stat-card .sc-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    margin-bottom: 6px;
+  }
+
+  .stat-card .sc-count {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1;
+  }
+
+  .stat-card .sc-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* Table area */
+  .db-table-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 2px 24px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+  }
+
+  .db-table-header {
+    padding: 20px 24px 18px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .db-table-header h5 {
+    margin: 0;
+    font-weight: 700;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .db-search-input {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    outline: none;
+    width: 220px;
+    transition: border-color 0.2s;
+  }
+
+  .db-search-input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+  }
+
+  .db-table-wrap {
+    overflow-x: auto;
+    max-height: 520px;
+    overflow-y: auto;
+  }
+
+  .db-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+
+  .db-table thead th {
+    background: #f8fafc;
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748b;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    white-space: nowrap;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .db-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.15s;
+  }
+
+  .db-table tbody tr:hover {
+    background: #f8f7ff;
+  }
+
+  .db-table tbody td {
+    padding: 11px 16px;
+    color: #334155;
+    white-space: nowrap;
+    max-width: 260px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .db-table tbody td:first-child {
+    font-weight: 700;
+    color: #6366f1;
+  }
+
+  .db-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #94a3b8;
+  }
+
+  .empty-state i {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .welcome-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 340px;
+    text-align: center;
+    gap: 14px;
+    color: #64748b;
+  }
+
+  .welcome-state .big-icon {
+    width: 90px;
+    height: 90px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.4rem;
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+    margin-bottom: 8px;
+  }
+
+  .row-count-pill {
+    background: #f1f5f9;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #64748b;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .row-count-pill.has-filter {
+    background: #eef2ff;
+    color: #6366f1;
+  }
+
+  /* ── Live Search Bar ─────────────────────────── */
+  .search-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 5px 10px 5px 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 320px;
+  }
+
+  .search-bar-wrap:focus-within {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.14);
+    background: #fff;
+  }
+
+  .search-bar-wrap .search-icon {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    transition: color 0.2s;
+  }
+
+  .search-bar-wrap:focus-within .search-icon {
+    color: #6366f1;
+  }
+
+  .search-bar-input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 0.85rem;
+    color: #1e293b;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .search-bar-input::placeholder {
+    color: #b0bad3;
+  }
+
+  .search-clear-btn {
+    cursor: pointer;
+    color: #94a3b8;
+    font-size: 0.75rem;
+    background: #e2e8f0;
+    border: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .search-clear-btn:hover {
+    background: #6366f1;
+    color: #fff;
+  }
+
+  .search-clear-btn.visible {
+    display: flex;
+  }
+
+  .col-filter-select {
+    border: none;
+    background: transparent;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #6366f1;
+    cursor: pointer;
+    outline: none;
+    padding: 2px 4px;
+    border-left: 1.5px solid #e2e8f0;
+    margin-left: 4px;
+    flex-shrink: 0;
+  }
+
+  /* Highlight matched text */
+  mark.search-hl {
+    background: #fde68a;
+    color: #78350f;
+    border-radius: 3px;
+    padding: 0 2px;
+    font-weight: 700;
+  }
+
+  /* No-results row */
+  .no-results-row td {
+    text-align: center;
+    padding: 48px 20px;
+    color: #94a3b8;
+  }
+
+  .no-results-row td .nr-icon {
+    font-size: 2.2rem;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .no-results-row td p {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .no-results-row td small {
+    font-size: 0.8rem;
+    color: #b0bad3;
+  }
+
+  /* Colour coding for icon backgrounds */
+  .bg-indigo-soft {
+    background: #eef2ff;
+    color: #6366f1;
+  }
+
+  .bg-blue-soft {
+    background: #eff6ff;
+    color: #3b82f6;
+  }
+
+  .bg-emerald-soft {
+    background: #ecfdf5;
+    color: #10b981;
+  }
+
+  .bg-amber-soft {
+    background: #fffbeb;
+    color: #f59e0b;
+  }
+
+  .bg-rose-soft {
+    background: #fff1f2;
+    color: #f43f5e;
+  }
+
+  /* Responsive sidebar collapse */
+  @media (max-width: 768px) {
+    .db-wrapper {
+      flex-direction: column;
+    }
+
+    .db-sidebar {
+      width: 100%;
+      flex-direction: row;
+      flex-wrap: wrap;
+      padding: 16px;
+    }
+
+    .db-sidebar-title {
+      display: none;
+    }
+
+    .db-main {
+      padding: 18px 14px;
+    }
+  }
+</style>
+
+<div class="db-wrapper">
+
+  <!-- ── Sidebar ─────────────────────────────────────── -->
+  <aside class="db-sidebar">
+    <div class="db-sidebar-title">Tables</div>
+
+    <a href="{{ url_for('admin_database_table', table_name='users') }}"
+      class="db-table-btn {% if active_table == 'users' %}active{% endif %}">
+      <i class="fas fa-users fa-fw"></i>
+      Users
+      <span class="badge-count">{{ stats.users }}</span>
+    </a>
+
+    <a href="{{ url_for('admin_database_table', table_name='products') }}"
+      class="db-table-btn {% if active_table == 'products' %}active{% endif %}">
+      <i class="fas fa-box fa-fw"></i>
+      Products
+      <span class="badge-count">{{ stats.products }}</span>
+    </a>
+
+    <a href="{{ url_for('admin_database_table', table_name='orders') }}"
+      class="db-table-btn {% if active_table == 'orders' %}active{% endif %}">
+      <i class="fas fa-receipt fa-fw"></i>
+      Orders
+      <span class="badge-count">{{ stats.orders }}</span>
+    </a>
+
+    <a href="{{ url_for('admin_database_table', table_name='order_items') }}"
+      class="db-table-btn {% if active_table == 'order_items' %}active{% endif %}">
+      <i class="fas fa-list-ol fa-fw"></i>
+      Order Items
+      <span class="badge-count">{{ stats.order_items }}</span>
+    </a>
+
+    <a href="{{ url_for('admin_database_table', table_name='cart') }}"
+      class="db-table-btn {% if active_table == 'cart' %}active{% endif %}">
+      <i class="fas fa-shopping-cart fa-fw"></i>
+      Cart
+      <span class="badge-count">{{ stats.cart }}</span>
+    </a>
+
+    <div style="margin-top:auto; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.06);">
+      <a href="{{ url_for('admin_dashboard') }}" class="db-table-btn" style="color:#6ee7b7;">
+        <i class="fas fa-arrow-left fa-fw"></i>
+        Back to Dashboard
+      </a>
+    </div>
+  </aside>
+
+  <!-- ── Main Content ──────────────────────────────── -->
+  <main class="db-main">
+
+    <div class="db-header">
+      <div class="db-title">
+        <i class="fas fa-database" style="color:#6366f1;"></i>
+        Database Viewer
+        <span class="title-badge">ADMIN ONLY</span>
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="stat-grid">
+      <a href="{{ url_for('admin_database_table', table_name='users') }}" class="stat-card">
+        <div class="sc-icon bg-indigo-soft"><i class="fas fa-users"></i></div>
+        <div class="sc-count">{{ stats.users }}</div>
+        <div class="sc-label">Users</div>
+      </a>
+      <a href="{{ url_for('admin_database_table', table_name='products') }}" class="stat-card">
+        <div class="sc-icon bg-blue-soft"><i class="fas fa-box"></i></div>
+        <div class="sc-count">{{ stats.products }}</div>
+        <div class="sc-label">Products</div>
+      </a>
+      <a href="{{ url_for('admin_database_table', table_name='orders') }}" class="stat-card">
+        <div class="sc-icon bg-emerald-soft"><i class="fas fa-receipt"></i></div>
+        <div class="sc-count">{{ stats.orders }}</div>
+        <div class="sc-label">Orders</div>
+      </a>
+      <a href="{{ url_for('admin_database_table', table_name='order_items') }}" class="stat-card">
+        <div class="sc-icon bg-amber-soft"><i class="fas fa-list-ol"></i></div>
+        <div class="sc-count">{{ stats.order_items }}</div>
+        <div class="sc-label">Order Items</div>
+      </a>
+      <a href="{{ url_for('admin_database_table', table_name='cart') }}" class="stat-card">
+        <div class="sc-icon bg-rose-soft"><i class="fas fa-shopping-cart"></i></div>
+        <div class="sc-count">{{ stats.cart }}</div>
+        <div class="sc-label">Cart Items</div>
+      </a>
+    </div>
+
+    <!-- Table Card -->
+    <div class="db-table-card">
+
+      {% if active_table and columns %}
+      <!-- Header -->
+      <div class="db-table-header">
+        <h5>
+          {% if active_table == 'users' %}<i class="fas fa-users text-indigo" style="color:#6366f1;"></i>{% endif %}
+          {% if active_table == 'products' %}<i class="fas fa-box" style="color:#3b82f6;"></i>{% endif %}
+          {% if active_table == 'orders' %}<i class="fas fa-receipt" style="color:#10b981;"></i>{% endif %}
+          {% if active_table == 'order_items' %}<i class="fas fa-list-ol" style="color:#f59e0b;"></i>{% endif %}
+          {% if active_table == 'cart' %}<i class="fas fa-shopping-cart" style="color:#f43f5e;"></i>{% endif %}
+          &nbsp;{{ active_table | replace('_', ' ') | title }} Table
+        </h5>
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+          <span class="row-count-pill" id="rowCountPill">{{ data | length }} rows</span>
+
+          <!-- ── Search Bar ── -->
+          <div class="search-bar-wrap" id="searchBarWrap">
+            <i class="fas fa-search search-icon"></i>
+            <input class="search-bar-input" type="text" id="tableSearch" placeholder="Search rows…" autocomplete="off"
+              spellcheck="false">
+            <button class="search-clear-btn" id="searchClearBtn" title="Clear search">&times;</button>
+            <select class="col-filter-select" id="colFilter" title="Search in column">
+              <option value="-1">All Cols</option>
+              {% for col in columns %}
+              <option value="{{ loop.index0 }}">{{ col }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="db-table-wrap">
+        {% if data %}
+        <table class="db-table" id="dbTable">
+          <thead>
+            <tr>
+              {% for col in columns %}
+              <th>{{ col }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in data %}
+            <tr>
+              {% for cell in row %}
+              <td title="{{ cell }}">{{ cell }}</td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+          <i class="fas fa-inbox"></i>
+          <p class="fw-semibold">No records found in this table.</p>
+        </div>
+        {% endif %}
+      </div>
+
+      {% else %}
+      <!-- Welcome state when no table selected -->
+      <div class="welcome-state">
+        <div class="big-icon"><i class="fas fa-database"></i></div>
+        <h4 class="fw-bold text-dark">All Databases at a Glance</h4>
+        <p style="max-width:360px;">Select a table from the sidebar to view its full contents. All website data is
+          stored in the SQLite database below.</p>
+        <div class="d-flex gap-3 mt-2 flex-wrap justify-content-center">
+          <a href="{{ url_for('admin_database_table', table_name='users') }}"
+            class="btn btn-outline-primary rounded-pill px-4">
+            <i class="fas fa-users me-2"></i>View Users
+          </a>
+          <a href="{{ url_for('admin_database_table', table_name='products') }}"
+            class="btn btn-outline-primary rounded-pill px-4">
+            <i class="fas fa-box me-2"></i>View Products
+          </a>
+          <a href="{{ url_for('admin_database_table', table_name='orders') }}"
+            class="btn btn-outline-success rounded-pill px-4">
+            <i class="fas fa-receipt me-2"></i>View Orders
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
+    </div> <!-- /db-table-card -->
+
+  </main>
+</div>
+
+<script>
+  (function () {
+    var originalCellHTML = [];
+    var debounceTimer = null;
+    var TOTAL_ROWS = {{ data | length
+  }};
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var tbody = document.querySelector('#dbTable tbody');
+    var searchInput = document.getElementById('tableSearch');
+    var clearBtn = document.getElementById('searchClearBtn');
+    var colSelect = document.getElementById('colFilter');
+    var countPill = document.getElementById('rowCountPill');
+
+    if (!tbody || !searchInput) return;
+
+    /* --- Snapshot original cell HTML so highlights can be undone --- */
+    tbody.querySelectorAll('tr').forEach(function (tr, ri) {
+      originalCellHTML[ri] = [];
+      tr.querySelectorAll('td').forEach(function (td, ci) {
+        originalCellHTML[ri][ci] = td.innerHTML;
+      });
+    });
+
+    /* --- Ctrl+F / Cmd+F to focus the search bar --- */
+    document.addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+        e.preventDefault();
+        searchInput.focus();
+        searchInput.select();
+      }
+    });
+
+    /* --- Core filter + highlight logic --- */
+    function runFilter() {
+      var raw = searchInput.value;
+      var q = raw.trim().toLowerCase();
+      var colIdx = parseInt(colSelect.value, 10); /* -1 = all columns */
+      var rows = tbody.querySelectorAll('tr:not(.no-results-row)');
+
+      /* Remove stale no-results row */
+      var stale = tbody.querySelector('.no-results-row');
+      if (stale) stale.remove();
+
+      /* Show / hide the × clear button */
+      if (clearBtn) clearBtn.classList.toggle('visible', raw.length > 0);
+
+      var matchCount = 0;
+
+      rows.forEach(function (tr, ri) {
+        /* Restore original innerHTML before re-highlighting */
+        tr.querySelectorAll('td').forEach(function (td, ci) {
+          if (originalCellHTML[ri] && originalCellHTML[ri][ci] !== undefined) {
+            td.innerHTML = originalCellHTML[ri][ci];
+          }
+        });
+
+        if (!q) {
+          tr.style.display = '';
+          matchCount++;
+          return;
+        }
+
+        /* Which cells to search? */
+        var tds = tr.querySelectorAll('td');
+        var cells = colIdx === -1 ? Array.from(tds) : (tds[colIdx] ? [tds[colIdx]] : []);
+
+        var texts = cells.map(function (td) { return td.textContent.toLowerCase(); });
+        var isMatch = texts.some(function (t) { return t.includes(q); });
+
+        tr.style.display = isMatch ? '' : 'none';
+
+        if (isMatch) {
+          matchCount++;
+          /* Highlight with <mark> */
+          var escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          var regex = new RegExp('(' + escaped + ')', 'gi');
+          cells.forEach(function (td, i) {
+            if (!texts[i].includes(q)) return;
+            td.innerHTML = td.textContent.replace(regex, '<mark class="search-hl">$1</mark>');
+          });
+        }
+      });
+
+      /* Update the "X / Y rows" pill */
+      if (countPill) {
+        if (q) {
+          countPill.textContent = matchCount + ' / ' + TOTAL_ROWS + ' rows';
+          countPill.classList.add('has-filter');
+        } else {
+          countPill.textContent = TOTAL_ROWS + ' rows';
+          countPill.classList.remove('has-filter');
+        }
+      }
+
+      /* Inject no-results row when nothing matches */
+      if (q && matchCount === 0) {
+        var colCount = rows[0] ? rows[0].querySelectorAll('td').length : 1;
+        var nr = document.createElement('tr');
+        nr.className = 'no-results-row';
+        nr.innerHTML =
+          '<td colspan="' + colCount + '">' +
+          '<span class="nr-icon">🔍</span>' +
+          '<p>No rows match &ldquo;<strong>' + raw.replace(/</g, '&lt;') + '</strong>&rdquo;</p>' +
+          '<small>Try a different keyword or change the column filter.</small>' +
+          '</td>';
+        tbody.appendChild(nr);
+      }
+    }
+
+    /* Debounced typing (160 ms) */
+    searchInput.addEventListener('input', function () {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(runFilter, 160);
+    });
+
+    /* Column selector: re-run immediately */
+    colSelect.addEventListener('change', function () {
+      clearTimeout(debounceTimer);
+      runFilter();
+    });
+
+    /* Clear button resets search */
+    clearBtn.addEventListener('click', function () {
+      searchInput.value = '';
+      runFilter();
+      searchInput.focus();
+    });
+  }); /* end DOMContentLoaded */
+}) (); /* end IIFE */
+</script>
+
+{% endblock %}
